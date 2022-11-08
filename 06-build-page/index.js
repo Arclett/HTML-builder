@@ -2,6 +2,10 @@ const fs = require("fs/promises");
 const path = require("path");
 
 const createHtml = async function () {
+  await fs.rm(path.join(__dirname, "project-dist"), {
+    recursive: true,
+    force: true,
+  });
   await fs.mkdir(`${__dirname}/project-dist`, { recursive: true });
   let template = await fs.readFile(`${__dirname}/template.html`, "utf-8");
   const components = await fs.readdir(`${__dirname}/components`, {
@@ -65,9 +69,11 @@ const copyDir = async function (inp, out) {
   }
 };
 
-createHtml();
-merge();
-copyDir(
-  path.join(__dirname, "assets"),
-  path.join(__dirname, "project-dist/assets")
-);
+(async () => {
+  await createHtml();
+  await merge();
+  await copyDir(
+    path.join(__dirname, "assets"),
+    path.join(__dirname, "project-dist/assets")
+  );
+})();
